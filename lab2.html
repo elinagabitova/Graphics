@@ -1,0 +1,49 @@
+ <HTML>
+ 
+ <BODY>
+ 
+     <canvas id ='lw2_1' height='100' width='100'></canvas>
+     <canvas id ='lw2_2' height='100' width='100'></canvas>
+ 
+     <script>
+         let canvas1 = document.getElementById("lw2_1");
+         let ctx1 = canvas1.getContext("2d");
+         let canvas2 = document.getElementById("lw2_2");
+         let ctx2 = canvas2.getContext("2d");
+         let width = canvas1.width;
+         let height = canvas1.height;
+         ctx1.fillRect(0, 0, 60, 60);
+ 
+ 
+         let imageData = ctx1.getImageData(0, 0, width, height);
+         modyfy();
+ 
+         function modyfy(){
+             function foo(a1, a2, a3, param){
+                 return ( 
+                     imageData.data[a1-4+param]+imageData.data[a1+param]+imageData.data[a1+4+param]+ 
+                     imageData.data[a1-4+param]+imageData.data[a2+param]+imageData.data[a2+4+param]+ 
+                     imageData.data[a3-4+param]+imageData.data[a3+param]+imageData.data[a3+4+param])/9;
+             }
+ 
+             
+             for(let i = 1; i < width - 1; i++)
+             {
+                 for(let j = 1; j < height - 1; j++)
+                 {
+                     a1 = 4 * (width * (j - 1) +  i);
+                     a2 = 4 * (width * j + i);
+                     a3 = 4 * (width * (j + 1) + i );
+                     for(let param = 0; param < 4; param++)
+                     {
+                         imageData.data[a2 + param] = foo(a1, a2, a3, param);
+                     }
+                 }
+             } 
+         ctx2.putImageData(imageData, 0, 0);
+         }
+ 
+     </script>
+ </BODY>
+ </HTML>
+ 
