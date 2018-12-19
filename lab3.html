@@ -1,0 +1,92 @@
+<html>
+<body style="margin:0;">
+	<canvas id="lb3" width="1000" height="1000"></canvas>
+	<script type>
+		function Line(x1, y1, x2, y2) {
+			var deltaX = Math.abs(x2 - x1);
+			var deltaY = Math.abs(y2 - y1);
+			var signX = x1 < x2 ? 1 : -1;
+			var signY = y1 < y2 ? 1 : -1;
+			var error = deltaX - deltaY;
+			ctx.fillRect(x2, y2, 1, 1);
+			while(x1 != x2 || y1 != y2) 
+			{
+				ctx.fillRect(x1, y1, 1, 1);
+				var error2 = error * 2;
+				if(error2 > -deltaY) 
+				{
+					error -= deltaY;
+					x1 += signX;
+				}
+				if(error2 < deltaX) 
+				{
+					error += deltaX;
+					y1 += signY;
+				}
+			}
+		}
+		function Round(x1, y1, r) {
+			let x = 0;
+			let y = r;
+			let delta = 1 - 2 * r;
+			let error = 0;
+			while (y >= 0) {
+				ctx.fillRect(x1 + x, y1 + y, 1, 1);
+				ctx.fillRect(x1 + x, y1 - y, 1, 1);
+				ctx.fillRect(x1 - x, y1 + y, 1, 1);
+				ctx.fillRect(x1 - x, y1 - y, 1, 1);
+				error = 2 * (delta + y) - 1;
+				if ((delta < 0) && (error <= 0)) {
+					delta += 2 * ++x + 1;
+					continue;
+				}
+				if ((delta > 0) && (error > 0)) {
+					delta -= 2 * --y + 1;
+					continue;
+				}
+				delta += 2 * (++x - y--);
+			}
+		}
+		function makeLine(event){
+			if (!lineClick) {
+				lineClick = true;
+				makeLine.x = event.offsetX;
+				makeLine.y = event.offsetY;
+			}
+			else {
+				lineClick = false;
+				Line(makeLine.x, 
+					 makeLine.y, 
+					 event.offsetX,
+					 event.offsetY);
+			}
+		}
+		function makeRound(event) {
+			event.preventDefault();
+			if (!roundClick) {
+				roundClick = true;
+				makeRound.x = event.offsetX;
+				makeRound.y = event.offsetY;
+			}
+			else {
+				roundClick = false;
+				Round(makeRound.x, 
+					  makeRound.y, 
+					  Math.sqrt(Math.pow(makeRound.x - event.offsetX, 2) + 
+						        Math.pow(makeRound.y - event.offsetY, 2)));
+			}
+		}
+		let canvas = document.getElementById('lb3');
+		let ctx = canvas.getContext('2d');
+		let lineClick = false;
+		let roundClick = false;
+		canvas.addEventListener('click', makeLine, false);
+		canvas.addEventListener('contextmenu', makeRound, false);
+		Line(0, 0, 1000, 0);
+		Line(0, 0, 500, 250);
+		Line(500, 250, 1000, 0);
+		Line(500, 250, 500, 450)
+		Round(500, 250, 200);
+	</script>
+</body>
+</html>
