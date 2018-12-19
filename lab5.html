@@ -1,0 +1,99 @@
+<html>
+<body style="margin:0;">
+	<canvas id="lb3" width="1000" height="1000"></canvas>
+	<script type>
+		let canvas = document.getElementById('lb3');
+		let ctx = canvas.getContext('2d');
+		let lineClick = false;
+		function Line(x1, y1, x2, y2) {
+			var deltaX = Math.abs(x2 - x1);
+			var deltaY = Math.abs(y2 - y1);
+			var signX = x1 < x2 ? 1 : -1;
+			var signY = y1 < y2 ? 1 : -1;
+			var error = deltaX - deltaY;
+			ctx.fillRect(x2, y2, 1, 1);
+			while(x1 != x2 || y1 != y2) 
+			{
+				ctx.fillRect(x1, y1, 1, 1);
+				var error2 = error * 2;
+				if(error2 > -deltaY) 
+				{
+					error -= deltaY;
+					x1 += signX;
+				}
+				if(error2 < deltaX) 
+				{
+					error += deltaX;
+					y1 += signY;
+				}
+			}
+		}
+		var mass = [
+			[300, 700], //x
+			[300, 700]	//y
+		];
+		function onFig(x, y){
+			return (x>=mass[0][0] && x<=mass[0][1] && y>=mass[1][0] && y<=mass[1][1]);
+		}
+		function clip(x1, y1, x2, y2){
+			if(onFig(x1, y1)&&onFig(x2, y2)){
+				Line(x1, y1, x2, y2);
+				return;
+			}
+			var dx = x2-x1;
+			var dy = y2-y1;
+			var k = [0,0,0,0];
+			k[0] = -(x1 - mass[0][0])/dx;
+			k[1] = (mass[0][1] - x1)/dx;
+			k[2] = -(y1 - mass[1][0])/dy;
+			k[3] = (mass[1][1] - y1)/dy;
+			var count = 0;
+			var massAns = [
+				[0,0],
+				[0,0]
+			]
+			for (var i = 0; i < 4; i++) {
+				if(k[i]<=1 && k[i]>=0){
+					if(count <2){
+						massAns[count][0] = Math.round(x1 + k[i] * dx);
+						massAns[count][1] = Math.round(y1 + k[i] * dy);
+						count++;
+					}
+				}
+			}
+			if(onFig(massAns[0][0], massAns[0][1])){
+				if(count ==2) Line(massAns[0][0], massAns[0][1], massAns[1][0], massAns[1][1]);
+				else if(count == 1){
+					if(onFig(x1, y1)){
+						Line(x1, y1, massAns[0][0], massAns[0][1]);
+					}else{
+					Line(massAns[0][0], massAns[0][1],x2, y2);	
+					}
+				}
+			}
+			
+		}
+		function makeLine(event){
+			if (!lineClick) {
+				lineClick = true;
+				makeLine.x = event.offsetX;
+				makeLine.y = event.offsetY;
+			}
+			else {
+				lineClick = false;
+				clip(makeLine.x, 
+					 makeLine.y, 
+					 event.offsetX,
+					 event.offsetY);
+			}
+		}
+		
+		canvas.addEventListener('click', makeLine, false);
+		
+		Line(mass[0][0], mass[1][0], mass[0][1], mass[1][0]);
+		Line(mass[0][1], mass[1][0], mass[0][1], mass[1][1]);
+		Line(mass[0][1], mass[1][1], mass[0][0], mass[1][1]);
+		Line(mass[0][0], mass[1][1], mass[0][0], mass[1][0]);
+	</script>
+</body>
+</html>
