@@ -1,0 +1,36 @@
+html>
+<body style="margin:0;">
+	<canvas id="lb3" width="1000" height="1000"></canvas>
+	<script type>
+		
+		let canvas = document.getElementById('lb3');
+		let ctx = canvas.getContext('2d');
+		var coord = [
+			[50, 500],
+			[300, 100],
+			[600, 600],
+			[700, 200]
+		]
+		ctx.moveTo(coord[0][0], coord[0][1]); 
+		ctx.lineTo(coord[1][0], coord[1][1]); 
+		ctx.lineTo(coord[2][0], coord[2][1]);
+		ctx.lineTo(coord[3][0], coord[3][1]);
+		ctx.stroke();
+		for (var t = 0; t < 1; t=t+0.005) {
+			var x = Math.round(
+					Math.pow((1-t), 3)*coord[0][0] +
+					3*Math.pow((1-t), 2)*t*coord[1][0] +
+					3*Math.pow(t, 2)*(1-t)*coord[2][0] + 
+					Math.pow(t, 3)*coord[3][0]
+					);
+			var y = Math.round(
+					Math.pow((1-t), 3)*coord[0][1] +
+					3*Math.pow((1-t), 2)*t*coord[1][1] +
+					3*Math.pow(t, 2)*(1-t)*coord[2][1] + 
+					Math.pow(t, 3)*coord[3][1]
+					);
+			ctx.fillRect(x, y, 5, 5);
+		}
+	</script>
+</body>
+</html>
